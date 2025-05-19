@@ -4,17 +4,18 @@ defmodule Garden.Plans do
   """
 
   import Ecto.Query, warn: false
+  import Ecto.Changeset
 
   alias Garden.Repo
 
-  alias Garden.Plans.{Layout, Soil}
+  alias Garden.Plans.{Layout, Soil, Plant}
 
   @doc """
   Atomic creation of beds and a layout whilst ensuring the geometry of beds doesn't
   intersect with any other bed in the layout. Everything is done in a transaction
   so that if there's an issue, everything gets rolled back and nothing is inserted.
 
-  note: this is where I spent a lot of time.
+  NOTE: this is where I spent a lot of time. This is the limit of my Elixir skills.
   """
   def create_beds_and_layout(attrs) do
     # break up the attrs
@@ -71,6 +72,23 @@ defmodule Garden.Plans do
              new_bed.y + new_bed.l < bed.y or
              new_bed.y > bed.y + bed.l)
     end)
+  end
+
+  @doc """
+  Creates a plant
+  """
+  def create_plant(attrs) do
+    benefits_from_ids = Map.get(attrs, :benefits_from, [])
+    benefits_from = Repo.all(from p in Plant, where: p.id in ^benefits_from_ids)
+    soil_ids = Map.get(attrs, :soils, [])
+    soils = Repo.all(from(s in Soil, where: s.id in ^soil_ids))
+    attrs = Map.drop(attrs, [:soil_ids])
+
+    %Plant{}
+    |> Plant.changeset(attrs)
+    |> put_assoc(:soils, soils)
+    |> put_assoc(:benefits_from, benefits_from)
+    |> Repo.insert()
   end
 
   @doc """

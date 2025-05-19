@@ -6,10 +6,31 @@ defmodule Garden.PlansTest do
   import Ecto.Query
 
   alias Garden.Plans
-  alias Garden.Plans.{Layout, Bed}
+  alias Garden.Plans.{Layout, Bed, Plant}
   import Garden.PlansFixtures
 
   describe "Basic checks" do
+
+    test "create_plants works as expected" do
+      # make a soil
+      soil = soil_fixture(%{name: "loam"})
+
+      # make a plant with that soil and it should have one soil
+      {:ok, tomato} = Plans.create_plant(%{name: "tomato", soils: [soil.id]})
+      tomato = tomato |> Repo.preload(:soils)
+      assert length(tomato.soils) == 1
+
+      # great, now we can make another plant and do a benefits_from
+      {:ok, celery} = Plans.create_plant(%{name: "celery", soils: [soil.id], benefits_from: [tomato.id]})
+      celery = celery |> Repo.preload([:soils, :benefits_from])
+      assert length(celery.benefits_from) == 1
+
+      # and if we get tomato, we can see it gives benefits to celery
+      tomato = Repo.get_by(Plant, name: "tomato") |> Repo.preload([:benefits_from, :benefits_to, :soils])
+      assert "celery" in Enum.map(tomato.benefits_to, fn p -> p.name end)
+
+    end
+
     test "create_beds_and_layout works as expected" do
 
       # make a soil
