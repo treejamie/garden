@@ -4,7 +4,7 @@ defmodule Garden.Plans.Layout do
 
   schema "layouts" do
     field(:name, :string)
-
+    has_many(:beds, Garden.Plans.Bed)
     timestamps(type: :utc_datetime)
   end
 
