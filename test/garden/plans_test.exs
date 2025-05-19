@@ -12,12 +12,15 @@ defmodule Garden.PlansTest do
   describe "Basic checks" do
     test "create_beds_and_layout works as expected" do
 
+      # make a soil
+      soil = soil_fixture(%{name: "loam"})
+
       # make two beds where one intersects the other - error
       attrs = %{
         name: "layout 1",
         beds: [
-          %{w: 2, l: 3, x: 2, y: 2},
-          %{w: 2, l: 3, x: 0, y: 0}
+          %{w: 2, l: 3, x: 2, y: 2, soil_id: soil.id},
+          %{w: 2, l: 3, x: 0, y: 0, soil_id: soil.id}
         ]
       }
       # we get an error on base - no layouts, no beds
@@ -30,8 +33,8 @@ defmodule Garden.PlansTest do
       attrs = %{
         name: "layout 1",
         beds: [
-          %{w: 2, l: -1, x: 2, y: 2},
-          %{w: 2, l: 3, x: 0, y: 0}
+          %{w: 2, l: -1, x: 2, y: 2, soil_id: soil.id},
+          %{w: 2, l: 3, x: 0, y: 0, soil_id: soil.id}
         ]
       }
       # we get an error on l
@@ -45,8 +48,8 @@ defmodule Garden.PlansTest do
       attrs = %{
         name: "layout 1",
         beds: [
-          %{w: 2, l: 2, x: 2.1, y: 2.1},
-          %{w: 2, l: 2, x: 0, y: 0}
+          %{w: 2, l: 2, x: 2.1, y: 2.1, soil_id: soil.id},
+          %{w: 2, l: 2, x: 0, y: 0, soil_id: soil.id}
         ]
       }
       {:ok, _beds} = Plans.create_beds_and_layout(attrs)

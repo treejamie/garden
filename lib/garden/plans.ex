@@ -6,7 +6,8 @@ defmodule Garden.Plans do
   import Ecto.Query, warn: false
 
   alias Garden.Repo
-  alias Garden.Plans.Layout
+
+  alias Garden.Plans.{Layout, Soil}
 
   @doc """
   Atomic creation of beds and a layout whilst ensuring the geometry of beds doesn't
@@ -70,6 +71,15 @@ defmodule Garden.Plans do
              new_bed.y + new_bed.l < bed.y or
              new_bed.y > bed.y + bed.l)
     end)
+  end
+
+  @doc """
+  Creates soil
+  """
+  def create_soil(attrs) do
+    %Soil{}
+    |> Soil.changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """

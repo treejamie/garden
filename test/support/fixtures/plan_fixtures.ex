@@ -2,6 +2,18 @@ defmodule Garden.PlansFixtures do
 
   alias Garden.Plans
 
+  @doc """
+  Generate a soil
+  """
+  def soil_fixture(attrs \\ %{}) do
+    {:ok, soil} =
+      attrs
+      |> Enum.into(%{
+        name: "The default layout name"
+      })
+      |> Plans.create_soil()
+    soil
+  end
 
   @doc """
   Generate a layout
