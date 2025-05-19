@@ -1,0 +1,44 @@
+name: Tests
+on:
+    push
+jobs:
+  elixir-test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-24.04]
+        otp: [27.3.4]
+        elixir: [1.18.3]
+    services:
+      postgres:
+        image: postgres/postgres-17.5
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: garden_test
+          POSTGRES_PORT: 5432
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.otp }}
+          elixir-version: ${{ matrix.elixir }}
+
+      - name: Install dependencies
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+      - name: Run tests
+        run: |
+          mix compile --force --
+          mix test

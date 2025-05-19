@@ -1,0 +1,37 @@
+# Elixir build artifacts
+/_build/
+/deps/
+/erl_crash.dump
+
+# Mix config
+/.elixir_ls/
+/config/*.secret.exs
+
+# Static asset build artifacts (esbuild, tailwind)
+assets/node_modules/
+assets/.vite/
+assets/.next/
+priv/static/assets/
+priv/static/cache_manifest.json
+
+# Environment files
+.env
+.env.*
+
+# IDE/editor/system junk
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Coverage
+/cover/
+/cover.html
+
+# Test & temp
+/tmp/
+/test/tmp/
+
+# Logs
+/log/
