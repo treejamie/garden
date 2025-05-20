@@ -4,7 +4,7 @@ defmodule GardenWeb.API.LayoutController do
   alias Garden.Repo
 
   def create(conn, params) do
-    IO.inspect(params)
+
     case Plans.create_layout_and_beds_atomically(params) do
       {:ok, layout } ->
         conn

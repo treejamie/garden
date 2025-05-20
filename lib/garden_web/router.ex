@@ -13,6 +13,9 @@ defmodule GardenWeb.Router do
 
     post("/layouts", API.LayoutController, :create)
     get("/layouts/:id", API.LayoutController, :show)
+
+    # endpoints for background knowledge
+    get("/soils", API.SoilController, :index)
   end
 
 end
