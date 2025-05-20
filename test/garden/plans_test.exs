@@ -10,6 +10,28 @@ defmodule Garden.PlansTest do
 
   # TODO: organise this better
   describe "plan context tests" do
+
+    test "create_layout_and_beds_atomically returns error if soil_id is a string that doesn't fetch a soil" do
+      # make the background knowledge - just need soil for beds
+      {:ok, _soil} = Plans.create_soil(%{name: "loam"})
+
+      # make the attrs
+      attrs = %{
+        name: "Kew",
+        beds: [
+          %{soil_id: "chalk" , x: 1, y: 0, l: 2, w: 2}
+        ]
+      }
+      # we have loam but we've sent chalk - soil_id has an error
+      {:error, changeset} = Plans.create_layout_and_beds_atomically(attrs)
+      refute changeset.valid?
+      assert changeset.errors[:soil_id]
+
+      # crucially however we have no layouts because rollback
+      assert 0 == Repo.aggregate(Layout, :count, :id)
+
+    end
+
     test "create_plants works as expected" do
       # make a soil
       soil = soil_fixture(%{name: "loam"})

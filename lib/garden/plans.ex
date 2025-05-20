@@ -112,6 +112,87 @@ defmodule Garden.Plans do
   end
 
   @doc """
+  Create a layout and beds atomically and if there are
+  any errors, rollback so that we leave the data in good shape.
+
+  Dear reader - this is the edge of my current knowledge. I look
+  forward to going beyond this in the near future.
+
+  This works, but I'm holding my nose a bit. It was lucky for me
+  that Repo.rollback acts like a raise.  Despite the smell, it
+  was important that I got this bit working. Sometimes, that's how
+  it goes.
+  """
+  def create_layout_and_beds_atomically(attrs) do
+    # get the attributes
+    layout_attrs = Map.drop(attrs, [:beds])
+    beds_attrs = Map.get(attrs, :beds)
+
+    # open transaction
+    Repo.transaction(fn ->
+      # if layout fails, abort and rollback
+      layout =
+        case create_layout(layout_attrs) do
+          {:ok, layout} ->
+            layout
+
+          {:error, changeset} ->
+            Repo.rollback(changeset)
+        end
+
+      # beds could be one or more, so it's an enumeration. There are other tools
+      # that would fit better here reduce_while, reduce etc, but I wanted to do
+      # it with the tools I know to honestly show you what you'd be hiring.
+      beds =
+        Enum.map(beds_attrs, fn attrs ->
+
+          # put layout_id into the attrs
+          attrs = Map.put(attrs, :layout_id, layout.id)
+
+          # soil could be a name and that won't save so replace any binary soil_id
+          # with an defacto soil id. This is another database intensive operation
+          # that I would monitor in a production environment
+          soil_from_attrs = Map.get(attrs, :soil_id, nil)
+
+          soil_id =
+            if is_binary(soil_from_attrs) do
+              case get_soil(soil_from_attrs) do
+                nil ->
+                  # return a changeset with the error
+                  Repo.rollback(
+                    add_error(
+                      Bed.changeset(%Bed{}, attrs),
+                      :soil_id,
+                      "#{soil_from_attrs} is not a known soil type"
+                    )
+                  )
+              end
+            else
+              get_soil(soil_from_attrs).id
+            end
+
+          # update attrs with soil id
+          attrs = Map.put(attrs, :soil_id, soil_id)
+          IO.inspect(attrs)
+
+
+          # soil_id = if is_binary(attrs[""])
+          # attrs = case
+
+          case create_bed_in_layout(attrs) do
+            {:ok, bed} ->
+              bed
+
+            {:error, changeset} ->
+              Repo.rollback(changeset)
+          end
+        end)
+
+      {:ok, beds}
+    end)
+  end
+
+  @doc """
   Creates a bed in a given layout.
 
   Beds must not collide with any existing beds in that layout.

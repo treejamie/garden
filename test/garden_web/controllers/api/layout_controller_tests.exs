@@ -2,17 +2,37 @@ defmodule GardenWeb.API.LayoutControllerTests do
   use GardenWeb.ConnCase, async: true
   alias Garden.Plans
 
-  describe "creation tests" do
-
+  describe "POST /v1/layouts tests" do
     # create_layout_collinding_beds
-    # create_layout_one_bed
+    test "POST /v1/layouts create_layout_one_bed", %{conn: conn} do
+      # A layout and a bed
+      params = %{
+        name: "a garden",
+        beds: [
+          %{"soil" => "chalk", "x" => 0, "y" => 0, "w" => 2.5, "l" => 1.8}
+        ]
+      }
+
+      # post it and we get a layout, 201 status (:created) and
+      # a location header to where we can access it it if we wanted to
+      conn = post(conn, ~p"/v1/layouts", params)
+      assert 201 == conn.status
+      [location] = get_resp_header(conn, "location")
+      assert location =~ ~p"/v1/layouts"
+
+
+    end
+
     test "POST /v1/layouts works as expected when creating one bed with no layout", %{conn: conn} do
       # very minimal
       params = %{name: "A lovely layout"}
 
-      # SEND IT!
+      # post it and we get a layout, 201 status (:created) and
+      # a location header to where we can access it it if we wanted to
       conn = post(conn, ~p"/v1/layouts", params)
-      assert conn.status == 201
+      assert 201 == conn.status
+      [location] = get_resp_header(conn, "location")
+      assert location =~ ~p"/v1/layouts"
     end
 
     test "GET /v1/layouts/:id returns a json rendered layout with all associations", %{conn: conn} do
