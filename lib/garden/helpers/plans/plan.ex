@@ -2,6 +2,8 @@ defmodule Garden.Plans.Plan do
   use Ecto.Schema
   import Ecto.Changeset
 
+
+  @derive {Jason.Encoder, only: [:id, :area, :bed, :plant]}
   schema "plans" do
     field(:area, :float)
 

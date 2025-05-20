@@ -10,8 +10,11 @@ defmodule GardenWeb.Router do
   scope "/v1", GardenWeb do
     pipe_through :api
 
+    post("/strategies", API.StrategyController, :create)
+    get("/strategies/:id", API.StrategyController, :show)
 
     post("/layouts", API.LayoutController, :create)
+    get("/layouts", API.LayoutController, :list)
     get("/layouts/:id", API.LayoutController, :show)
 
     # endpoints for background knowledge

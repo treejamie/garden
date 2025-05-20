@@ -1,5 +1,9 @@
-{ "plans": [
-	{"bed": null, "plant": "spinach", "area": 0.5},
-	{"bed": null, "plant": "potato", "area": 1.2},
-	{"bed": null, "plant": "tomato", "area": 0.3}
-]}
+{
+	"name": "a name for the strategy",
+	"description": "a description for the strategy",
+	 "plans": [
+		{"bed": null, "plant": "spinach", "area": 0.5},
+		{"bed": null, "plant": "potato", "area": 1.2},
+		{"bed": null, "plant": "tomato", "area": 0.3}
+	]
+}

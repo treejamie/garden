@@ -1,4 +1,4 @@
-defmodule GardenWeb.API.LayoutJSON do
+defmodule GardenWeb.API.StrategyJSON do
   def error(%{changeset: changeset}) do
     errors =
       Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
@@ -9,15 +9,14 @@ defmodule GardenWeb.API.LayoutJSON do
 
     %{errors: errors}
   end
-  def list(%{garden_layouts: layouts}) do
-    layouts
-  end
 
-  def show(%{garden_layout: layout}) do
+  def show(%{strategy: strategy}) do
     %{
-      id: layout.id,
-      name: layout.name,
-      beds: layout.beds
+      id: strategy.id,
+      name: strategy.name,
+      description: strategy.description,
+      score: strategy.score,
+      plans: strategy.plans
     }
   end
 end

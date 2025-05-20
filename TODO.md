@@ -3,6 +3,12 @@
 Seems obvious but here is an API with write access. If this was online, someone/thing/group would find a way to use it in unintended and likley not legally abiding ways.
 
 
+## Authentication / User Scopes
+
+Ideally all layouts and beds should belong to a user.
+
+Requests could be authentication using various means Bearer Tokens, oauth, SAML, and so on and so forth. But having things locked down so that users had to authenticate to become authorised to use the application seems like an obvious choice.
+
 ## Performance
 
 There's a few places that have some smelly database work, tidying them up and wirting in some application performance monitoring would be a winner. That give insight into what needed to be addressed to increase performance.
@@ -13,11 +19,6 @@ I didn't implement anything custom in OTP for this. It didn't see any place wher
 I just wanted to mention that because OTP is one of the crown jewels.
 
 
-## Authentication / User Scopes
-
-Ideally all layouts and beds should belong to a user.
-
-Requests could be authentication using various means Bearer Tokens, oauth, SAML, and so on and so forth. But having things locked down so that users had to authenticate to become authorised to use the application seems like an obvious choice.
 
 ## Proper GeoSpatial with PostGIS
 
@@ -27,12 +28,13 @@ Probably a next step, I did start off with a PostGIS version, but I painted myse
 
 These are exposed publically and are increment based which leaves a requirement to defend against enumeration attacks.
 
+I'd also like to ensure that you couldn't craft request in such a way so that you could create plans for beds to which layouts don't exist.
+
 # L18N
 
 I've got some messages, especially error messages in which I've interpolated values to give meaningful feedback. However, It'd be better to use the Ecto method (transversing) of providing values for placeholders.
 
-It'd also be a good time to internationalise everything and get all strings out of the application and under the control of gettext
-
+It'd also be a good time to internationalise everything and get all strings out of the application and under the control of gettext. I'd do L18N as soon as it was decided the app was going to be "a thing". Doing it later is painful and the sooner you get good at it, the better.
 
 ## Indexes
 
@@ -111,6 +113,24 @@ I changed the data to this
   }
 ]
 }
+
+
+## Docs
+
+### Docstrings
+
+I'd properly document all the docstrings and ensure that as much information was in them so that editors could parse meta information. Modern editors are amazing and they don't get used enough. VIM is included in modern editors by the way. But I won't mention emacs. #guesstheteam
+
+
+### Doctests
+
+In the right places doctests are very useful and I'd ensure the right places had docstests in.
+
+## create_strategy_and_plans_atomically & create_layout_and_beds_atomically
+
+They're very similar in functionality and it'd be a hoot to figure out an abstraction for that so it could be reused and made less awful to use.
+
+
 
 
 [1]: https://hexdocs.pm/ecto/Ecto.Changeset.html#cast_assoc/3 
