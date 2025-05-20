@@ -1,0 +1,47 @@
+[
+  {
+    "name": "tomato",
+    "soil_types": ["chalk", "loam", "sandy"],
+    "benefits_from": ["onion", "garlic"]
+  },
+  {
+    "name": "onion",
+    "soil_types": ["chalk", "loam"],
+    "benefits_from": []
+  },
+  {
+    "name": "garlic",
+    "soil_types": ["chalk", "loam", "sandy"],
+    "benefits_from": []
+  },
+  {
+    "name": "carrot",
+    "soil_types": ["chalk", "loam", "sandy"],
+    "benefits_from": ["tomato", "onion", "garlic", "pea"]
+  },
+  {
+    "name": "pea",
+    "soil_types": ["chalk", "loam", "sandy"],
+    "benefits_from": ["carrot", "radish", "potato"]
+  },
+  {
+    "name": "sweetcorn",
+    "soil_types": ["chalk", "loam", "clay", "sandy"],
+    "benefits_from": []
+  },
+  {
+    "name": "potato",
+    "soil_types": ["loam", "sandy"],
+    "benefits_from": ["garlic", "onion", "pea", "sweetcorn"]
+  },
+  {
+    "name": "spinach",
+    "soil_types": ["chalk", "loam"],
+    "benefits_from": ["radish", "pea"]
+  },
+  {
+    "name": "radish",
+    "soil_types": ["loam", "sandy"],
+    "benefits_from": [""]
+  }
+]

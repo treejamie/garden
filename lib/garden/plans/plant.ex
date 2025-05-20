@@ -34,6 +34,5 @@ defmodule Garden.Plans.Plant do
     plant
     |> cast(attrs, [:name])
     |> validate_required([:name])
-
   end
 end
