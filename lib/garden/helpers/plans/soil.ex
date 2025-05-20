@@ -3,7 +3,7 @@ defmodule Garden.Plans.Soil do
   import Ecto.Changeset
 
 
-  @derive {Jason.Encoder, only: [:name, :plants]}
+  @derive {Jason.Encoder, only: [:id, :name, :plants]}
   schema "soils" do
     field :name, :string
 

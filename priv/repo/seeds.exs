@@ -66,11 +66,15 @@ plants =
       Enum.map(benefits_from, &Plans.get_plant/1)
       |> Enum.reject(&is_nil/1)
 
+    soils =
+      Enum.map(soil_types, &Plans.get_soil/1)
+
     # no context function for this one, so go straight to the repo
     plant =
       plant
       |> Plant.changeset(%{})
       |> Ecto.Changeset.put_assoc(:benefits_from, benefits_from)
+      |> Ecto.Changeset.put_assoc(:soils, soils)
       |> Repo.update!()
 
     IO.inspect(benefits_from)
