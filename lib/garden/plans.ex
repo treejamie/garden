@@ -166,19 +166,17 @@ defmodule Garden.Plans do
                       "#{soil_from_attrs} is not a known soil type"
                     )
                   )
+                soil -> soil.id
               end
             else
               get_soil(soil_from_attrs).id
             end
 
+
           # update attrs with soil id
           attrs = Map.put(attrs, :soil_id, soil_id)
-          IO.inspect(attrs)
 
-
-          # soil_id = if is_binary(attrs[""])
-          # attrs = case
-
+          # now after all that pollava we can just do the thing
           case create_bed_in_layout(attrs) do
             {:ok, bed} ->
               bed
@@ -188,7 +186,8 @@ defmodule Garden.Plans do
           end
         end)
 
-      {:ok, beds}
+      # and done...
+      beds
     end)
   end
 
