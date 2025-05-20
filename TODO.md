@@ -113,4 +113,22 @@ I changed the data to this
 }
 
 
+## Docs
+
+### Docstrings
+
+I'd properly document all the docstrings and ensure that as much information was in them so that editors could parse meta information. Modern editors are amazing and they don't get used enough. VIM is included in modern editors by the way. But I won't mention emacs. #guesstheteam
+
+
+### Doctests
+
+In the right places doctests are very useful and I'd ensure the right places had docstests in.
+
+## create_strategy_and_plans_atomically & create_layout_and_beds_atomically
+
+They're very similar in functionality and it'd be a hoot to figure out an abstraction for that so it could be reused and made less awful to use.
+
+
+
+
 [1]: https://hexdocs.pm/ecto/Ecto.Changeset.html#cast_assoc/3 

@@ -10,7 +10,73 @@ defmodule Garden.Plans do
 
   alias Garden.Plans.{Layout, Soil, Plant, Bed, Strategy, Plan}
 
+  @doc """
+  Atomically create plans, if there are any issues, abort and rollback
+  """
+  def create_strategy_and_plans_atomically(attrs) do
+    # get the attributes
+    strategy_attrs = Map.drop(attrs, ["plans"])
+    plans_attrs = Map.get(attrs, "plans", [])
 
+    # open the transaction
+    Repo.transaction(fn ->
+      # if the strategy fails, abort and rollback
+      strategy =
+        case create_strategy(strategy_attrs) do
+          {:ok, strategy} ->
+            strategy
+
+          {:error, changeset} ->
+            Repo.rollback(changeset)
+        end
+
+      # plans enumerate. See similar function below for more words about
+      # how I feel about this approach.
+      _plans =
+        Enum.map(plans_attrs, fn attrs ->
+
+          # put strategy_id onto the map
+          attrs = Map.put(attrs, "strategy_id", strategy.id)
+
+          # plant could be a name, so ensure we have an id
+          plant_from_attrs = Map.get(attrs, "plant_id", nil)
+
+          plant_id =
+            if is_binary(plant_from_attrs) do
+              case get_plant(plant_from_attrs) do
+                nil ->
+                  # return a changeset with the error
+                  Repo.rollback(
+                    add_error(
+                      Bed.changeset(%Bed{}, attrs),
+                      :plant_id,
+                      "#{plant_from_attrs} is not a known plant"
+                    )
+                  )
+
+                plant ->
+                  plant.id
+              end
+            else
+              # I'm aware we could have a nil value here, but that'll get picked
+              # up in the changset when the bed is created below.
+              plant_from_attrs
+            end
+
+          # update attrs with soil id
+          attrs = Map.put(attrs, "plant_id", plant_id)
+
+          # do the thing
+          case create_plan_in_strategy(attrs) do
+            {:ok, plan} -> plan
+            {:error, changeset} -> Repo.rollback(changeset)
+          end
+        end)
+
+        # and done, yippee
+        Repo.preload(strategy, [:plans])
+    end)
+  end
 
   @doc """
   Gets a strategy for a given id with plans preloaded
@@ -145,11 +211,10 @@ defmodule Garden.Plans do
         end
 
       # beds could be one or more, so it's an enumeration. There are other tools
-      # that would fit better here reduce_while, reduce etc, but I wanted to do
+      # that would fit better here (reduce_while, reduce etc), but I wanted to do
       # it with the tools I know to honestly show you what you'd be hiring.
       _beds =
         Enum.map(beds_attrs, fn attrs ->
-
           # put layout_id into the attrs
           attrs = Map.put(attrs, "layout_id", layout.id)
 
@@ -170,14 +235,15 @@ defmodule Garden.Plans do
                       "#{soil_from_attrs} is not a known soil type"
                     )
                   )
-                soil -> soil.id
+
+                soil ->
+                  soil.id
               end
             else
               # I'm aware we could have a nil value here, but that'll get picked
               # up in the changset when the bed is created below.
               soil_from_attrs
             end
-
 
           # update attrs with soil id
           attrs = Map.put(attrs, "soil_id", soil_id)
