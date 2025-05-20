@@ -32,7 +32,7 @@ I've aimed to hit the spec, but I'm leaning towards adding a few helper API endp
 
 These endpoints are the central endpoints for the application:
 
-TODO.....
+* `POST /v1/layouts` - creates a new layout with supplied beds
 
 These endpoints all the application to be used entirely from the command line and would make the putting together of CSV nicer. How would someone know the bed id of something if I didn't provide these?
 

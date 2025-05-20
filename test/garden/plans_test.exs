@@ -8,7 +8,8 @@ defmodule Garden.PlansTest do
   alias Garden.Plans.{Layout, Bed, Plant, Strategy, Plan}
   import Garden.PlansFixtures
 
-  describe "application centric tests" do
+  # TODO: organise this better
+  describe "plan context tests" do
     test "create_plants works as expected" do
       # make a soil
       soil = soil_fixture(%{name: "loam"})
@@ -32,12 +33,12 @@ defmodule Garden.PlansTest do
       assert "celery" in Enum.map(tomato.benefits_to, fn p -> p.name end)
     end
 
-
     test "get_strategy works as expected and preloads plans" do
       # build the universe: soil, plants, layout, bed
       {:ok, plant} = Plans.create_plant(%{name: "chilli"})
       {:ok, clay} = Plans.create_soil(%{name: "clay"})
       {:ok, layout} = Plans.create_layout(%{name: "The Blue Peter Garden"})
+
       {:ok, bed} =
         Plans.create_bed_in_layout(%{
           layout_id: layout.id,
@@ -47,16 +48,23 @@ defmodule Garden.PlansTest do
           l: 2,
           w: 2
         })
+
       # make a strategy and plan
       {:ok, strategy} = Plans.create_strategy(%{name: "Quercus", layout_id: layout.id})
-      {:ok, plan} = Plans.create_plan_in_strategy(%{strategy_id: strategy.id, bed_id: bed.id, area: 3.75, plant_id: plant.id})
+
+      {:ok, plan} =
+        Plans.create_plan_in_strategy(%{
+          strategy_id: strategy.id,
+          bed_id: bed.id,
+          area: 3.75,
+          plant_id: plant.id
+        })
 
       # get the strategy from context function and we have the strategy and preloaded plans
       s = Plans.get_strategy(strategy.id)
       assert plan.id == List.first(s.plans).id
-
-
     end
+
     test "list_strategies_for_layout" do
       # make a layout and give it two strategies
       {:ok, layout} = Plans.create_layout(%{name: "The Blue Peter Garden"})
@@ -67,7 +75,6 @@ defmodule Garden.PlansTest do
       # now use context manager and we get back the
       strategies = Plans.list_strategies_for_layout(layout.id)
       assert 3 == Enum.count(strategies)
-
     end
 
     test "create_plan_in_strategy errors if plan area bigger than bed area" do
@@ -75,6 +82,7 @@ defmodule Garden.PlansTest do
       {:ok, plant} = Plans.create_plant(%{name: "chilli"})
       {:ok, clay} = Plans.create_soil(%{name: "clay"})
       {:ok, layout} = Plans.create_layout(%{name: "The Blue Peter Garden"})
+
       {:ok, bed} =
         Plans.create_bed_in_layout(%{
           layout_id: layout.id,
@@ -84,6 +92,7 @@ defmodule Garden.PlansTest do
           l: 2,
           w: 2
         })
+
       {:ok, strategy} = Plans.create_strategy(%{name: "Avalokiteśvara", layout_id: layout.id})
 
       # now make the plan attrs and save it - plan area larger than bed
@@ -100,6 +109,7 @@ defmodule Garden.PlansTest do
       {:ok, plant} = Plans.create_plant(%{name: "chilli"})
       {:ok, clay} = Plans.create_soil(%{name: "clay"})
       {:ok, layout} = Plans.create_layout(%{name: "The Blue Peter Garden"})
+
       {:ok, bed} =
         Plans.create_bed_in_layout(%{
           layout_id: layout.id,
@@ -109,6 +119,7 @@ defmodule Garden.PlansTest do
           l: 2,
           w: 2
         })
+
       {:ok, strategy} = Plans.create_strategy(%{name: "Māra", layout_id: layout.id})
 
       # now make the plan attrs and save it - area on this one is less than bed.
@@ -122,7 +133,6 @@ defmodule Garden.PlansTest do
       assert plan.strategy.id == strategy.id
     end
 
-
     test "create_strategy works as expected" do
       # strategies need a plan
       {:ok, layout} = Plans.create_layout(%{name: "The Blue Peter Garden"})
@@ -133,8 +143,9 @@ defmodule Garden.PlansTest do
         name: "version one, bees.",
         description: "A plan maximised around bee activity"
       }
+
       # it saves and we have one in the database
-      {:ok, _strategy } = Plans.create_strategy(strategy_attrs)
+      {:ok, _strategy} = Plans.create_strategy(strategy_attrs)
       assert 1 == Repo.aggregate(Strategy, :count, :id)
     end
 
