@@ -357,6 +357,13 @@ defmodule Garden.Plans do
   end
 
   @doc """
+  Gets all the layouts
+  """
+  def get_layouts() do
+    from(l in Layout) |> Repo.all()
+  end
+
+  @doc """
   Gets the layout
   """
   def get_layout(id) do

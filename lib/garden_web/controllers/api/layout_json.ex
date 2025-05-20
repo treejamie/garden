@@ -9,6 +9,9 @@ defmodule GardenWeb.API.LayoutJSON do
 
     %{errors: errors}
   end
+  def list(%{garden_layouts: layouts}) do
+    layouts
+  end
 
   def show(%{garden_layout: layout}) do
     %{

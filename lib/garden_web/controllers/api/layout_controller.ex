@@ -3,6 +3,13 @@ defmodule GardenWeb.API.LayoutController do
   alias Garden.Plans
   alias Garden.Repo
 
+
+  def list(conn, _params) do
+    layouts = Plans.get_layouts()
+    render(conn, :list, garden_layouts: Repo.preload(layouts, [:beds, :strategies]))
+
+  end
+
   def create(conn, params) do
     case Plans.create_layout_and_beds_atomically(params) do
       {:ok, layout } ->

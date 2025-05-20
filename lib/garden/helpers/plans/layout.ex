@@ -2,6 +2,8 @@ defmodule Garden.Plans.Layout do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:id, :name, :beds, :strategies]}
+
   schema "layouts" do
     field(:name, :string)
 
