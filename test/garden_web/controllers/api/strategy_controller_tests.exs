@@ -6,7 +6,7 @@ defmodule GardenWeb.API.StrategyControllerTests do
 
   describe "POST /strategies tests for creating plans" do
 
-    test "422 when strategy is created with a plan ", %{conn: conn} do
+    test "422 when strategy is created with a plan that has larger area than it's bed ", %{conn: conn} do
       # build universe
       {:ok, soil} = Plans.create_soil(%{name: "clay"})
       {:ok, _plant} = Plans.create_plant(%{name: "tomato", soils: [soil.id]})
@@ -28,17 +28,19 @@ defmodule GardenWeb.API.StrategyControllerTests do
         "layout_id" => layout.id,
         "description" => "arrgh man, yiv never seen mahters lyke it",  # geordie grandfather
         "plans" => [
-          %{"bed_id" => bed.id, "plant_id" => "tomato", "area" => 3.2}
+          %{"bed_id" => bed.id, "plant_id" => "tomato", "area" => 5}
         ]
       }
 
-      # set it, 201
+      # set it, 422 response and the issue was the area of the bed
       conn = post(conn, ~p"/v1/strategies", params)
-      assert conn.status == 201
+      assert conn.status == 422
+      assert "The area of the plan exceeds the bed area of 4.0" ==
+        List.first(json_response(conn, 422)["errors"]["area"])
 
-      # one stategy and one plans
-      assert 1 == Repo.aggregate(Strategy, :count, :id)
-      assert 1 == Repo.aggregate(Plan, :count, :id)
+      # no stategy and no plans
+      assert 0 == Repo.aggregate(Strategy, :count, :id)
+      assert 0 == Repo.aggregate(Plan, :count, :id)
     end
 
     test "201 when strategy is created with a plan that uses strings for plant_id", %{conn: conn} do

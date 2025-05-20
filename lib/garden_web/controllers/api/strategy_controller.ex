@@ -27,7 +27,7 @@ defmodule GardenWeb.API.StrategyController do
         |> json(%{error: "Strategy not found"})
       strategy ->
         conn
-        |> render(:show, strategy: Repo.preload(strategy, [:layout, :plans]))
+        |> render(:show, strategy: Repo.preload(strategy, [:layout, [plans: [:bed, :plant]]]))
     end
   end
 end

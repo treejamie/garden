@@ -15,7 +15,8 @@ defmodule GardenWeb.API.StrategyJSON do
       id: strategy.id,
       name: strategy.name,
       description: strategy.description,
-      score: strategy.score
+      score: strategy.score,
+      plans: strategy.plans
     }
   end
 end
