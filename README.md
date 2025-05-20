@@ -27,9 +27,10 @@ There should be three distinct stages from starting to getting a plan.
 
 This application was built using the below versions. It would likley work on other versions and if this was anything other than a demo, I'd give a list of full compatibility and ensure they were added into the CI tests.
 
+* Phoenix - 1.7.21
 * Elixir - 1.18.3
 * Erlang - 27.3.4
-* Postgres - 17~
+* Postgres - 17.5
 
 
 
