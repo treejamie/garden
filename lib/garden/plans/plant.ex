@@ -23,6 +23,7 @@ defmodule Garden.Plans.Plant do
       join_keys: [benefits_from_id: :id, benefits_to_id: :id]
     )
 
+    has_many(:plans, Garden.Plans.Plan)
 
 
     timestamps(type: :utc_datetime)

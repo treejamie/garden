@@ -1,14 +1,17 @@
 # Garden
 
-*General public*: This is not a real application designed for real world use. It is an application I was asked to do as part of a technical interview for a position somewhere. The rest of this readme is written in a conversational style, and would not normally be how I'd write an README.md. An example of how I would normally approach a readme can be found [here][0] and [here][1].
+*General public*: 🤓 This is not a real application designed for real world use. It is an application I was asked to do as part of a technical interview for a position somewhere. The rest of this readme is written in a conversational style, and would not normally be how I'd write an README.md. An example of how I would normally approach a readme can be found [here][0] and [here][1].
 
-*Interviewers*: Hello, I'm Jamie and look forward to discussing my work with you. Normally I'd run my readmes through an LLM to make them less wordy and less me, but in this case I've left them as is. Forgive any typos.
+*Interviewers*: 👋 Hello, I'm Jamie and look forward to discussing my work with you. Normally I'd run my readmes through an LLM to make them less wordy and less me, but in this case I've left them as is. Forgive any typos. It's written half conversationally and half as I would. It's not normally how I'd write a readme.
+
+Generally speaking my approach has been to leave out any superflous functionality and to only do the minimum that I'd be happy with if I was deploy this, as my responsibility, with my own payment details. That being said, with the time constraint I didn't have time to write a conceptually minimal app. The domain is somewhat familiar to me and this app felt like a baby version of a woodland creation tool.
 
 ## Aims
 
-This repository has two aims. The first is to provide an insight into how I write code, the way that I approach the writing of code and my general ability to solve a problem. Obviously, this is important.
+This application has two aims. The first is to provide an insight into how I write code, the way that I approach the writing of code and my general ability to solve a problem. Obviously, this is important. You may find blocks of comments that contain statements of thought in them. In production code I'd not leave such things in place so easily, but I saw some value in leaving them there as conversational talking points.
 
-The second aim is to build an application that allows people to create garden layouts and to which plans can be saved. The Application will give a score on plans based on various
+The second aim is to build an application that allows people to create garden layouts with beds. These beds have some data about them _(geometry, soil types_) and are saved against the layout. Once saved people can create plans for each bed and the application will give scores for each plan based on various factors.
+
 
 ## Experience
 
@@ -17,7 +20,7 @@ The command line is how the user will interface with the API (_or maybe postman 
 There should be three distinct stages from starting to getting a plan.
 
 1. Create the layout with the beds and data about the beds. 
-2. Create the plan with strategy for each bed. 
+2. Create the plans for each bed. 
 3. Query for a score for their plan.
 
 

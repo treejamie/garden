@@ -11,6 +11,8 @@ defmodule Garden.PlansTest do
 
   describe "Basic checks" do
 
+
+
     test "create_plants works as expected" do
       # make a soil
       soil = soil_fixture(%{name: "loam"})
@@ -30,6 +32,8 @@ defmodule Garden.PlansTest do
       assert "celery" in Enum.map(tomato.benefits_to, fn p -> p.name end)
 
     end
+
+
 
     test "create_beds_and_layout works as expected" do
 

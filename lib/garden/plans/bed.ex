@@ -12,6 +12,8 @@ defmodule Garden.Plans.Bed do
     belongs_to(:soil, Garden.Plans.Soil)
     belongs_to(:layout, Garden.Plans.Layout)
 
+    has_many(:plans, Garden.Plans.Plan)
+
     timestamps(type: :utc_datetime)
   end
 

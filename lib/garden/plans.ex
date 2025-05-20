@@ -11,11 +11,33 @@ defmodule Garden.Plans do
   alias Garden.Plans.{Layout, Soil, Plant}
 
   @doc """
+  Creates a bed in a given layout.
+
+  Beds must not collide with any existing beds in that layout.
+
+  NOTE: After writing the below comment I immediately set about creating this
+  function. I don't want to feel like I'm ignoring instruction but I think there's a
+  way to simplify the code a little whilst keepping the same experience. The trade off
+  is that it'll hammer the database a little, but in a prototype situation I think this
+  is an acceptable trade off.
+  """
+  def create_bed_in_layout(attrs) do
+
+  end
+
+  @doc """
   Atomic creation of beds and a layout whilst ensuring the geometry of beds doesn't
   intersect with any other bed in the layout. Everything is done in a transaction
   so that if there's an issue, everything gets rolled back and nothing is inserted.
 
-  NOTE: this is where I spent a lot of time. This is the limit of my Elixir skills.
+  NOTE: I was torn on a decision here. Part of me felt like making one bed at a time
+  would not only make for a better command line experience, but also simplfy the code
+  a lot. Multiple bed submission would become a future endevour because it's a little
+  grizzly.
+
+  NOTE: this is where I spent a lot of time. This is the current outer edge of my
+  Elixir skills but I can see into the distance at where I'd like to be in a few
+  months.
   """
   def create_beds_and_layout(attrs) do
     # break up the attrs
@@ -65,7 +87,12 @@ defmodule Garden.Plans do
     end)
   end
 
-  defp overlaps_any?(new_bed, existing_beds) do
+  @doc """
+  Detects overlap on a new bed against existing beds.
+  Currently uses primitive collision detection (AABB) and doesn't handle
+  touching very well.
+  """
+  def overlaps_any?(new_bed, existing_beds) do
     Enum.any?(existing_beds, fn bed ->
       not (new_bed.x + new_bed.w < bed.x or
              new_bed.x > bed.x + bed.w or
@@ -79,7 +106,7 @@ defmodule Garden.Plans do
   """
   def create_plant(attrs) do
     benefits_from_ids = Map.get(attrs, :benefits_from, [])
-    benefits_from = Repo.all(from p in Plant, where: p.id in ^benefits_from_ids)
+    benefits_from = Repo.all(from(p in Plant, where: p.id in ^benefits_from_ids))
     soil_ids = Map.get(attrs, :soils, [])
     soils = Repo.all(from(s in Soil, where: s.id in ^soil_ids))
     attrs = Map.drop(attrs, [:soil_ids])
