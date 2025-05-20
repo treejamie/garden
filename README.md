@@ -26,7 +26,7 @@ There should be three distinct stages from starting to getting a plan.
 I've aimed to hit the spec, but I'm leaning towards adding a few helper API endpoints to make the whole experience nicer and easier to use. Extra API endpoints:
 
 * `GET /v1/layouts` - returns all layouts
-* `GET /v1/layouts/:id/beds` - returns all beds for a given layout
+* `GET /v1/layouts/:id` - returns the layout and shows all beds for a given layout
 * `GET /v1/soils` - returns all soil types available in the application
 * `GET /v1/plants` - returns all plants available in the application
 

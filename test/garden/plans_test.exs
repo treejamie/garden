@@ -10,30 +10,27 @@ defmodule Garden.PlansTest do
 
   # TODO: organise this better
   describe "plan context tests" do
-
     test "create_layout_and_beds_atomically detects collision" do
       # make the background knowledge - just need soil for beds
       {:ok, soil} = Plans.create_soil(%{name: "loam"})
 
       # make the attrs
       attrs = %{
-        name: "Kew",
-        beds: [
-          %{soil_id: soil.id, x: 1, y: 0, l: 2, w: 2},
-          %{soil_id: soil.id, x: 2, y: 2, l: 2, w: 2}
+        "name" => "Kew",
+        "beds" => [
+          %{"soil_id" => soil.id, "x" => 1, "y" => 0, "l" => 2, "w" => 2},
+          %{"soil_id" => soil.id, "x" => 2, "y" => 2, "l" => 2, "w" => 2}
         ]
       }
+
       # we sent a string for soil, but that didn't matter and now we have
       # one bed and a layout.
-      {:error, _changset} = Plans.create_layout_and_beds_atomically(attrs)
+      {:error, _changeset} = Plans.create_layout_and_beds_atomically(attrs)
 
       # crucially however we have one layouts and one bed
       assert 0 == Repo.aggregate(Layout, :count, :id)
       assert 0 == Repo.aggregate(Bed, :count, :id)
-
     end
-
-
 
     test "create_layout_and_beds_atomically works with an actual soil.id" do
       # make the background knowledge - just need soil for beds
@@ -41,11 +38,12 @@ defmodule Garden.PlansTest do
 
       # make the attrs
       attrs = %{
-        name: "Kew",
-        beds: [
-          %{soil_id: soil.id, x: 1, y: 0, l: 2, w: 2}
+        "name" => "Kew",
+        "beds" => [
+          %{"soil_id" => soil.id, "x" => 1, "y" => 0, "l" => 2, "w" => 2}
         ]
       }
+
       # we sent a string for soil, but that didn't matter and now we have
       # one bed and a layout.
       {:ok, _beds} = Plans.create_layout_and_beds_atomically(attrs)
@@ -53,10 +51,7 @@ defmodule Garden.PlansTest do
       # crucially however we have one layouts and one bed
       assert 1 == Repo.aggregate(Layout, :count, :id)
       assert 1 == Repo.aggregate(Bed, :count, :id)
-
     end
-
-
 
     test "create_layout_and_beds_atomically translates a binary soil_id is into an actual soil.id" do
       # make the background knowledge - just need soil for beds
@@ -64,11 +59,12 @@ defmodule Garden.PlansTest do
 
       # make the attrs
       attrs = %{
-        name: "Kew",
-        beds: [
-          %{soil_id: "loam" , x: 1, y: 0, l: 2, w: 2}
+        "name" => "Kew",
+        "beds" => [
+          %{"soil_id" => "loam", "x" => 1, "y" => 0, "l" => 2, "w" => 2}
         ]
       }
+
       # we sent a string for soil, but that didn't matter and now we have
       # one bed and a layout.
       {:ok, _beds} = Plans.create_layout_and_beds_atomically(attrs)
@@ -76,11 +72,7 @@ defmodule Garden.PlansTest do
       # crucially however we have one layouts and one bed
       assert 1 == Repo.aggregate(Layout, :count, :id)
       assert 1 == Repo.aggregate(Bed, :count, :id)
-
     end
-
-
-
 
     test "create_layout_and_beds_atomically returns error if soil_id is a string that doesn't fetch a soil" do
       # make the background knowledge - just need soil for beds
@@ -88,11 +80,12 @@ defmodule Garden.PlansTest do
 
       # make the attrs
       attrs = %{
-        name: "Kew",
-        beds: [
-          %{soil_id: "chalk" , x: 1, y: 0, l: 2, w: 2}
+        "name" => "Kew",
+        "beds" => [
+          %{"soil_id" => "chalk", "x" => 1, "y" => 0, "l" => 2, "w" => 2}
         ]
       }
+
       # we have loam but we've sent chalk - soil_id has an error
       {:error, changeset} = Plans.create_layout_and_beds_atomically(attrs)
       refute changeset.valid?
@@ -100,7 +93,6 @@ defmodule Garden.PlansTest do
 
       # crucially however we have no layouts because rollback
       assert 0 == Repo.aggregate(Layout, :count, :id)
-
     end
 
     test "create_plants works as expected" do

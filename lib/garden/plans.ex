@@ -122,11 +122,13 @@ defmodule Garden.Plans do
   that Repo.rollback acts like a raise.  Despite the smell, it
   was important that I got this bit working. Sometimes, that's how
   it goes.
+
   """
   def create_layout_and_beds_atomically(attrs) do
     # get the attributes
-    layout_attrs = Map.drop(attrs, [:beds])
-    beds_attrs = Map.get(attrs, :beds)
+
+    layout_attrs = Map.drop(attrs, ["beds"])
+    beds_attrs = Map.get(attrs, "beds", [])
 
     # open transaction
     Repo.transaction(fn ->
@@ -143,16 +145,16 @@ defmodule Garden.Plans do
       # beds could be one or more, so it's an enumeration. There are other tools
       # that would fit better here reduce_while, reduce etc, but I wanted to do
       # it with the tools I know to honestly show you what you'd be hiring.
-      beds =
+      _beds =
         Enum.map(beds_attrs, fn attrs ->
 
           # put layout_id into the attrs
-          attrs = Map.put(attrs, :layout_id, layout.id)
+          attrs = Map.put(attrs, "layout_id", layout.id)
 
           # soil could be a name and that won't save so replace any binary soil_id
           # with an defacto soil id. This is another database intensive operation
           # that I would monitor in a production environment
-          soil_from_attrs = Map.get(attrs, :soil_id, nil)
+          soil_from_attrs = Map.get(attrs, "soil_id", nil)
 
           soil_id =
             if is_binary(soil_from_attrs) do
@@ -176,7 +178,7 @@ defmodule Garden.Plans do
 
 
           # update attrs with soil id
-          attrs = Map.put(attrs, :soil_id, soil_id)
+          attrs = Map.put(attrs, "soil_id", soil_id)
 
           # now after all that pollava we can just do the thing
           case create_bed_in_layout(attrs) do
@@ -188,8 +190,8 @@ defmodule Garden.Plans do
           end
         end)
 
-      # and done...
-      beds
+      # and done so send back the layout with the beds...
+      Repo.preload(layout, [:beds])
     end)
   end
 

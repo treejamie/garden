@@ -5,7 +5,7 @@ defmodule GardenWeb.API.LayoutController do
 
   def create(conn, params) do
     IO.inspect(params)
-    case Plans.create_layout(params) do
+    case Plans.create_layout_and_beds_atomically(params) do
       {:ok, layout } ->
         conn
         |> put_status(:created)

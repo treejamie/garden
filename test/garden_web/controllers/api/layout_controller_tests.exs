@@ -7,10 +7,11 @@ defmodule GardenWeb.API.LayoutControllerTests do
     test "POST /v1/layouts create_layout_one_bed", %{conn: conn} do
       # A layout and a bed
       params = %{
-        name: "a garden",
         beds: [
-          %{"soil" => "chalk", "x" => 0, "y" => 0, "w" => 2.5, "l" => 1.8}
-        ]
+          %{l: 1.8, soil_id: "chalk", w: 2.5, x: 0, y: 0},
+          %{l: 3.0, soil_id: "loam", w: 3.0, x: 5, y: 3}
+        ],
+        name: "Bob's Garden"
       }
 
       # post it and we get a layout, 201 status (:created) and
@@ -19,8 +20,6 @@ defmodule GardenWeb.API.LayoutControllerTests do
       assert 201 == conn.status
       [location] = get_resp_header(conn, "location")
       assert location =~ ~p"/v1/layouts"
-
-
     end
 
     test "POST /v1/layouts works as expected when creating one bed with no layout", %{conn: conn} do
