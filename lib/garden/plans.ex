@@ -10,6 +10,8 @@ defmodule Garden.Plans do
 
   alias Garden.Plans.{Layout, Soil, Plant, Bed, Strategy, Plan}
 
+
+
   @doc """
   Gets a strategy for a given id with plans preloaded
   """
