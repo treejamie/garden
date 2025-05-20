@@ -6,6 +6,12 @@ Probably a next step, I did start off with a PostGIS version, but I painted myse
 
 These are exposed publically and are increment based which leaves a requirement to defend against enumeration attacks.
 
+# L18N
+
+I've got some messages, especially error messages in which I've interpolated values to give meaningful feedback. However, It'd be better to use the Ecto method (transversing) of providing values for placeholders.
+
+It'd also be a good time to internationalise everything and get all strings out of the application and under the control of gettext
+
 
 ## Indexes
 

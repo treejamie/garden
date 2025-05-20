@@ -23,6 +23,21 @@ There should be three distinct stages from starting to getting a plan.
 2. Create the plans for each bed. 
 3. Query for a score for their plan.
 
+I've aimed to hit the spec, but I'm leaning towards adding a few helper API endpoints to make the whole experience nicer and easier to use. Extra API endpoints:
+
+* `GET /v1/layouts` - returns all layouts
+* `GET /v1/layouts/:id/beds` - returns all beds for a given layout
+* `GET /v1/soils` - returns all soil types available in the application
+* `GET /v1/plants` - returns all plants available in the application
+
+These endpoints are the central endpoints for the application:
+
+TODO.....
+
+These endpoints all the application to be used entirely from the command line and would make the putting together of CSV nicer. How would someone know the bed id of something if I didn't provide these?
+
+
+
 
 ## Installation
 
@@ -34,6 +49,11 @@ This application was built using the below versions. It would likley work on oth
 * Elixir - 1.18.3
 * Erlang - 27.3.4
 * Postgres - 17.5
+
+
+## Generators & Code
+
+I've used schema and migration generators, but I've stayed away from context generators. They tend to create a lot of code and whilst they save time on a project with a capital P, I find they create bloat on an exercise like this. Whilst I paid a little time penalty for this in creating some obvious Context bondaries (list, get etc) I thought it was worth it so you can see more clearly how I approach something.
 
 
 

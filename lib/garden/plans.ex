@@ -8,83 +8,160 @@ defmodule Garden.Plans do
 
   alias Garden.Repo
 
-  alias Garden.Plans.{Layout, Soil, Plant}
+  alias Garden.Plans.{Layout, Soil, Plant, Bed, Strategy, Plan}
+
+  @doc """
+  Gets a strategy for a given id with plans preloaded
+  """
+  def get_strategy(id) do
+    Repo.get(Strategy, id) |> Repo.preload(:plans)
+  end
+
+  @doc """
+  Lists all strategies for a layout
+  """
+  def list_strategies_for_layout(layout_id) do
+    from(s in Strategy,
+      where: s.layout_id == ^layout_id
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Creates a plan in a strategy.
+  """
+  def create_plan_in_strategy(attrs) do
+    changeset =
+      %Plan{}
+      |> Plan.changeset(attrs)
+
+    case changeset.valid? do
+      true ->
+        check_bed_area_equals_or_gt_plan(changeset)
+        |> Repo.insert()
+
+      false ->
+        # it won't work, but be consistent with other functions
+        Repo.insert(changeset)
+    end
+  end
+
+  def check_bed_area_equals_or_gt_plan(changeset) do
+    # get the bed and area
+    bed = get_field(changeset, :bed_id) |> get_bed()
+    plan_area = get_field(changeset, :area)
+
+    if plan_area > bed.area do
+      msg = "The area of the plan exceeds the bed area of #{bed.area}"
+      add_error(changeset, :area, msg)
+    else
+      changeset
+    end
+  end
+
+  @doc """
+  Gets a bed for a given id
+  """
+  def get_bed(id) do
+    Repo.get(Bed, id)
+  end
+
+  @doc """
+  Creates a strategy
+  """
+  def create_strategy(attrs) do
+    %Strategy{}
+    |> Strategy.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Lists all plants
+  """
+  def list_plants() do
+    Repo.all(Plant)
+  end
+
+  @doc """
+  Gets plant by soil or id
+  """
+  def get_plant(id) when is_binary(id) do
+    Repo.get_by(Plant, name: id)
+  end
+
+  def get_plant(id) do
+    Repo.get(Plant, id)
+  end
+
+  @doc """
+  Lists all soils
+  """
+  def list_soils() do
+    Repo.all(Soil)
+  end
+
+  @doc """
+  Gets soil by name or id
+  """
+  def get_soil(id) when is_binary(id) do
+    Repo.get_by(Soil, name: id)
+  end
+
+  def get_soil(id) do
+    Repo.get(Soil, id)
+  end
 
   @doc """
   Creates a bed in a given layout.
 
   Beds must not collide with any existing beds in that layout.
-
-  NOTE: After writing the below comment I immediately set about creating this
-  function. I don't want to feel like I'm ignoring instruction but I think there's a
-  way to simplify the code a little whilst keepping the same experience. The trade off
-  is that it'll hammer the database a little, but in a prototype situation I think this
-  is an acceptable trade off.
   """
   def create_bed_in_layout(attrs) do
+    # make the changeset but don't do geometry unless changeset.valid? is true
+    changeset =
+      %Bed{}
+      |> Bed.changeset(attrs)
 
+    case changeset.valid? do
+      true ->
+        check_geometry(changeset)
+        |> Repo.insert()
+
+      false ->
+        # it won't work, but be consistent with other functions
+        Repo.insert(changeset)
+    end
   end
 
   @doc """
-  Atomic creation of beds and a layout whilst ensuring the geometry of beds doesn't
-  intersect with any other bed in the layout. Everything is done in a transaction
-  so that if there's an issue, everything gets rolled back and nothing is inserted.
-
-  NOTE: I was torn on a decision here. Part of me felt like making one bed at a time
-  would not only make for a better command line experience, but also simplfy the code
-  a lot. Multiple bed submission would become a future endevour because it's a little
-  grizzly.
-
-  NOTE: this is where I spent a lot of time. This is the current outer edge of my
-  Elixir skills but I can see into the distance at where I'd like to be in a few
-  months.
+  Ensures bed geometry doesn't intersect with any other geometry
   """
-  def create_beds_and_layout(attrs) do
-    # break up the attrs
-    bed_attrs = Map.get(attrs, :beds)
-    layout_attrs = Map.drop(attrs, [:beds])
+  def check_geometry(changeset) do
+    # make a bed
+    bed = Ecto.Changeset.apply_action!(changeset, :insert)
 
-    Repo.transaction(fn ->
-      {:ok, layout} = create_layout(layout_attrs)
-      layout = Repo.preload(layout, :beds)
+    # this will always be safe to get
+    beds =
+      get_field(changeset, :layout_id)
+      |> get_beds_for_layout()
 
-      Enum.reduce_while(bed_attrs, {:ok, []}, fn attrs, {:ok, acc} ->
-        # Add layout_id and build changeset
-        attrs = Map.put(attrs, :layout_id, layout.id)
-        changeset = Garden.Plans.Bed.changeset(%Garden.Plans.Bed{}, attrs)
+    # check geometry
+    if overlaps_any?(bed, beds) do
+      msg = "Bed at (#{bed.x}, #{bed.y}) with size #{bed.w}x#{bed.l} overlaps another bed"
+      Ecto.Changeset.add_error(changeset, :base, msg)
+    else
+      changeset
+    end
+  end
 
-        # check the changset is valid and doesn't overlap
-        if changeset.valid? do
-          # make the struct as database ready as we can get it
-          {:ok, bed} = Ecto.Changeset.apply_action(changeset, :insert)
-
-          if overlaps_any?(bed, layout.beds ++ acc) do
-            # this is the important bit
-            # there's any overlap so set the base error
-            msg = "Bed at (#{bed.x}, #{bed.y}) with size #{bed.w}x#{bed.l} overlaps another bed"
-            Repo.rollback(Ecto.Changeset.add_error(changeset, :base, msg))
-          else
-            # no overlaps and it is valid.
-            case Repo.insert(changeset) do
-              {:ok, inserted} ->
-                # move on by returning :cont with {:ok and the accumulator}
-                {:cont, {:ok, [inserted | acc]}}
-
-              {:error, cs} ->
-                # error inserting, so rollback and return changeset
-                Repo.rollback({:error, cs})
-            end
-          end
-        else
-          # changeset was not valid
-          Repo.rollback(changeset)
-        end
-      end)
-      |> case do
-        {:ok, beds} -> Enum.reverse(beds)
-        error -> error
-      end
-    end)
+  @doc """
+  Returns beds for a given layout
+  """
+  def get_beds_for_layout(layout_id) do
+    from(b in Bed,
+      where: b.layout_id == ^layout_id
+    )
+    |> Repo.all()
   end
 
   @doc """

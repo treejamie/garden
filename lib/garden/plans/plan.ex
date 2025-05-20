@@ -7,7 +7,7 @@ defmodule Garden.Plans.Plan do
 
     belongs_to(:bed, Garden.Plans.Bed)
     belongs_to(:plant, Garden.Plans.Plant)
-    belongs_to(:layout, Garden.Plans.Layout)
+    belongs_to(:strategy, Garden.Plans.Strategy)
 
     timestamps(type: :utc_datetime)
   end
@@ -15,7 +15,7 @@ defmodule Garden.Plans.Plan do
   @doc false
   def changeset(plan, attrs) do
     plan
-    |> cast(attrs, [:area, :bed_id, :plant_id, :layout_id])
+    |> cast(attrs, [:area, :bed_id, :plant_id, :strategy_id])
     |> validate_required([:area])
   end
 end
