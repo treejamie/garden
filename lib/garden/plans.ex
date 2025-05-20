@@ -169,7 +169,9 @@ defmodule Garden.Plans do
                 soil -> soil.id
               end
             else
-              get_soil(soil_from_attrs).id
+              # I'm aware we could have a nil value here, but that'll get picked
+              # up in the changset when the bed is created below.
+              soil_from_attrs
             end
 
 

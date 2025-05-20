@@ -11,6 +11,29 @@ defmodule Garden.PlansTest do
   # TODO: organise this better
   describe "plan context tests" do
 
+    test "create_layout_and_beds_atomically detects collision" do
+      # make the background knowledge - just need soil for beds
+      {:ok, soil} = Plans.create_soil(%{name: "loam"})
+
+      # make the attrs
+      attrs = %{
+        name: "Kew",
+        beds: [
+          %{soil_id: soil.id, x: 1, y: 0, l: 2, w: 2},
+          %{soil_id: soil.id, x: 2, y: 2, l: 2, w: 2}
+        ]
+      }
+      # we sent a string for soil, but that didn't matter and now we have
+      # one bed and a layout.
+      {:error, _changset} = Plans.create_layout_and_beds_atomically(attrs)
+
+      # crucially however we have one layouts and one bed
+      assert 0 == Repo.aggregate(Layout, :count, :id)
+      assert 0 == Repo.aggregate(Bed, :count, :id)
+
+    end
+
+
 
     test "create_layout_and_beds_atomically works with an actual soil.id" do
       # make the background knowledge - just need soil for beds
