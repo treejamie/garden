@@ -5,24 +5,17 @@ defmodule GardenWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", GardenWeb do
+  # if this is hosted on api.foo.com then /api makes no sense.
+  # v1 scopes the APi to version, which is nice.
+  scope "/v1", GardenWeb do
     pipe_through :api
+
+
+    post("/layouts", API.LayoutController, :create)
+    get("/layouts/:id", API.LayoutController, :show)
+
+    # endpoints for background knowledge
+    get("/soils", API.SoilController, :index)
   end
 
-  # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:garden, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through [:fetch_session, :protect_from_forgery]
-
-      live_dashboard "/dashboard", metrics: GardenWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
-  end
 end
