@@ -97,7 +97,7 @@ And it fails because beds intersect
 It's worth noting that I mindfully spent time making these endpoints atomic and encased all database inserts in a transaction. So in the case of the latter example, even though the layout was created (_and it had to be to get the layout_id_) the beds collided and so the transaction was rolled back. I thought it was worth doing that because these are the kinds of considerations a framework cannot understand. You're still responsible for your data.
 
 
-### 2. Layouts and Beds
+### 2. Strategies and Plans
 
 I'd love to give you copy and paste examples, because everyone loves a bit of click'n'fire however at this stage you're going to need to get ids' that are specific to the instance running on your machine.  Postman is useful here and if you open up the collection I've given you can use that to submit
 
@@ -124,7 +124,7 @@ Example payload for success
 }
 ```
 
-which returns
+which returns the strategy and the plans. The plans belong to beds and that's how layouts > beds & strategies and plans play together.
 
 ```json
 {
