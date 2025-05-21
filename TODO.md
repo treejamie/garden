@@ -40,6 +40,10 @@ tail recursion for boundaries (score neighbours) was a function I was looking fo
 
 # Future Ideas
 
+## GraphQL
+
+I mentioned this in a few places in the code, but also worth mentioning here. The datastuctures are heavily nested and GraphQL may have been a better choice for the API. Once you're over the hump with grasping mutations and DX tooling, it's a nice experience.
+
 ## Authorisation
 
 Seems obvious but here is an API with write access. If this was online, someone/thing/group would find a way to use it in unintended and likley not legally abiding ways.
