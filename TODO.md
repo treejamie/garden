@@ -6,7 +6,7 @@ I was more or less at 5 hours of desk time by 7pm last night. I tagged the repos
 
 The HTTP bit is well beaten for me, this would have been a few minutes of router, controller, template and done.
 
-Calculating scores however, this is where I'm at my current functional limit. I'm sure I could work through it with more time. I'd like to be clear though that I am deeply engeged in a long term project to excel in my engineering. Any limits you see today are being pushed further and further through investment into myself.
+Calculating scores however, this is where I'm at my current functional limit. I'm sure I could work through it with more time. I'd like to be clear though that I am deeply engaged in a self-powered long term project to invest in my software engineering practice. Any limits you see today are being pushed further and further through investment into myself.
 
 If you're looking for a weak area in my application ths is one of them, but I want to be clear that intend on turning this weakness into a strength.  In terms of pseudo elixir though, here's how I would have approached it
 
@@ -22,8 +22,12 @@ scores =
     with {:ok, plan, score} <- score_neighbours(plan),
          {:ok, plan, score} <- score_soil(plan),
          {:ok, plan, score} <- score_soil_type(plan) do
-    else ->
-    {:error, plan, 0}
+    else 
+         {:error, _ , _} -> 0   # expected failure
+         error ->
+            # unexpected - return 0 but also log and check it out
+            Logger.error("Something went wrong in scores #{IO.inspect(error, label: "score function")}")
+            0
     end)
 
 # average scores, make a changeset and update the strategy.
