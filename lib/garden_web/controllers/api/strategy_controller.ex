@@ -10,7 +10,7 @@ defmodule GardenWeb.API.StrategyController do
         conn
         |> put_status(:created)
         |> put_resp_header("location", ~p"/v1/strategies/#{strategy.id}")
-        |> render(:show, strategy: Repo.preload(strategy, [:layout, :plans]))
+        |> render(:show, strategy: Repo.preload(strategy, [:layout, plans: [:bed, :plant]]))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

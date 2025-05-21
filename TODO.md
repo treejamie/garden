@@ -18,7 +18,7 @@ scores =
   Enum.map(strategy.plans, fn plan ->
     # each function would return 
     # {:ok, plan, score} on success
-    # {:ok, plan, 0} if it failed
+    # {:error, plan, 0} if it failed
     with {:ok, plan, score} <- score_neighbours(plan),
          {:ok, plan, score} <- score_soil(plan),
          {:ok, plan, score} <- score_soil_type(plan) do
@@ -37,6 +37,12 @@ I would have focused on solving it first and then optimising it, the database wo
 
 Each score function would have been some form of recursion on the plans, and that'd be a nice talking point becasue a 
 tail recursion for boundaries (score neighbours) was a function I was looking forward to writing.
+
+### Bonus on scores
+
+Also, whilst I am here, as a future I'd think about adding in ideas or suggestions to a plan, manual at first, but I'd be figuring out how to feed and train an LLM on the logs of the application. The idea is at somepoint, the LLM would augment (_AUGMENT - NOT REPLACE_) feedback on a plan.
+
+I'd provide the feedback with the scores on the `/v1/strategies/:id/score` endpoint.
 
 # Future Ideas
 
@@ -91,6 +97,12 @@ It'd also be a good time to internationalise everything and get all strings out 
 
 Plant name and soil names would be something I'd index when the time came.
 
+## Slugs & Wordy IDs
+
+IT wasn't possible to give examples for copying and pasting for the second example (layouts and plans) because of the use of numeric ids. Notwithstanding the point about enumeration attacks, if main schemas could submit a `slug` type string, enforced and indexed for uniqueness, then it would be possible to supply copy and paste examples.
+
+Yes, uuid4 could be use for ID's, but the space they use soon adds up. There's no perfect solution, just a question of where you want the smell to live.
+
 
 ## CLI
 Something to parse the api responses and present something a bit more useful on the command line. Example: `mix help phx.gen` nice tabular view kind of thing.
@@ -110,6 +122,9 @@ This is an area of Ecto modelling that I have some learning to do.
 
 ## Models
 
+### Don't allow Dupes / Idempotancy.
+
+Implememt some kind of duplicate detection and nice error handling. Obviously scoped to users, but it'd be nice to keep the data potent and meaningful. The less pollution in the database the better. Idempotency. That's the word. 
 
 ### Plants
 

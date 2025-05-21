@@ -33,12 +33,6 @@ This application was built using the below versions. It would likley work on oth
 * Erlang - 27.3.4
 * Postgres - 17.5
 
-
-```
-elixir 1.18.3-otp-27
-erlang 27.3.4
-```
-
 ## Installation
 
 1. `git clone git@github.com:treejamie/garden.git`
@@ -52,40 +46,92 @@ If you're using postman, you can also optionally use the [supplied postman colle
 
 ## Creating Plans
 
+For the second part I cannot give you completed "copy and paste" example because the ids requiire
+
 ### 1. Layouts and Beds
 
-Before there can be a strategy with plans for each bed, there has to be a layout with beds. Let's build that first and as this is the first thing you're creating, you can use the following command line tool.  
+Before there can be a strategy with plans for each bed, there has to be a layout with beds. Let's build that first and as this is the first thing you're creating, you can use the following command line example to get you started.
+
+This is for Bob's garden and it will succeed.
+
+```shell
+curl -X POST http://localhost:4000/v1/layouts \
+  -H "Content-Type: Application/json" \
+  --data-binary @priv/example-garden.json
+```
+
+That will respond with a bunch of JSON. I have expanded it through jq for clarity.
+```json
+{
+  "id": 16,
+  "name": "Garden of Bob",
+  "beds": [
+    { "id": 12, "x": 0.0, "y": 0.0, "w": 2.5, "l": 1.8, "area": 4.5, "soil_id": 1},
+    { "id": 13, "x": 5.0, "y": 3.0, "w": 3.0, "l": 3.0, "area": 9.0, "soil_id": 2}
+  ]
+}
+```
+
+To experience failure, you can use this command. It fails.
+
+```shell
+curl -X POST http://localhost:4000/v1/layouts \
+  -H "Content-Type: Application/json" \
+  --data-binary @priv/example-garden-fail.json
+```
+
+And it fails because beds intersect
+
+```json
+{
+  "errors": {
+    "base": [
+      "Bed at (1.0, 1.0) with size 3.0x3.0 overlaps another bed"
+    ]
+  }
+}
+```
 
 
-## Aims
+### 2. Layouts and Beds
 
-This application has two aims. The first is to provide an insight into how I write code, the way that I approach the writing of code and my general ability to solve a problem. Obviously, this is important. You may find blocks of comments that contain statements of thought in them. In production code I'd not leave such things in place so easily, but I saw some value in leaving them there as conversational talking points.
-
-The second aim is to build an application that allows people to create garden layouts with beds. These beds have some data about them _(geometry, soil types_) and are saved against the layout. Once saved people can create plans for each bed and the application will give scores for each plan based on various factors.
+I'd love to give you copy and paste examples, because everyone loves a bit of click'n'fire however at this stage you're going to need to get ids' that are specific to the instance running on your machine.
 
 
+## Endpoints
 
+Here's the endpoints and I'd encourage you to open up postman or whatever tooling you use to interact with APIs and play around. I didn't get to complete the score endpoint for this challange but I'm likley to do that on my own time so that the work is completed. There's some nice learning about functional programming, async tasks and potential OTP scope in the fifth example. I digress (_I did say this was a conversational readme. Not how I'd normally do it, but communication is a part of the interview process_)
 
-
-
-I've aimed to hit the spec, but I'm leaning towards adding a few helper API endpoints to make the whole experience nicer and easier to use. Extra API endpoints:
-
-* `GET /v1/layouts` - returns all layouts
-* `GET /v1/layouts/:id` - returns the layout and shows all beds for a given layout
-* `GET /v1/soils` - returns all soil types available in the application
-* `GET /v1/plants` - returns all plants available in the application
+### Core Endpoints
 
 These endpoints are the central endpoints for the application:
 
-* `POST /v1/layouts` - creates a new layout with supplied beds
+* `POST /v1/layouts` : creates a new layout with supplied beds. Atomic, anything fails - everything is rolledback. 
+* `POST /v1/strategies` : creates a planting strategy and it's plans. Atomic, anything fails - everything is rolledback.
+* 🚧 ~~`GET /v1/strategies/:id/scores` : shows the score for a given strategy and it's plans~~ 🚧 ask me this: why `GET`?
 
-These endpoints all the application to be used entirely from the command line and would make the putting together of CSV nicer. How would someone know the bed id of something if I didn't provide these?
+### Supplementary Endpoints
+
+Other endpoints I added to make the second task of creating strategies and plans less painful and more joyful:
+
+* `GET /v1/strategies/:id` : shows a strategy and it's relations 
+* `GET /v1/layouts` : lists all layouts so layout_id and bed_ids are easy to get
+* `GET /v1/layouts/:id` : shows a given layout and it's relations
+* `GET /v1/soils` : shows all soils and their ids
+* `GET /v1/plants` : shows all plants and their relations
 
 
+-----------------------------------
 
-## Generators & Code
+## MISC NOTES
 
-I've used schema and migration generators, but I've stayed away from context generators. They tend to create a lot of code and whilst they save time on a project with a capital P, I find they create bloat on an exercise like this. Whilst I paid a little time penalty for this in creating some obvious Context bondaries (list, get etc) I thought it was worth it so you can see more clearly how I approach something.
+### Generators & Excess Code
+
+I've used schema and migration generators, but I've stayed away from context generators. They tend to create a lot of code and whilst they save time on a project with a capital P, I find they create bloat on an exercise like this. Whilst I paid a little time penalty for this in creating some obvious context bondaries (list, get etc) I thought it was worth it so you can see more clearly how I approach something.
+
+### AI
+
+I declare that none of the code in the repository was written by AI. 
 
 
 

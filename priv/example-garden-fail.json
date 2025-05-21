@@ -1,5 +1,5 @@
 {
-  "name": "Garden of Bob",
+  "name": "Garden of Alice",
   "beds": [
   {
     "soil_id": "chalk",
@@ -10,8 +10,8 @@
   },
   {
     "soil_id": "loam",
-    "x": 5,
-    "y": 3,
+    "x": 1,
+    "y": 1,
     "w": 3.0,
     "l": 3.0
   }
