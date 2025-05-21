@@ -92,10 +92,91 @@ And it fails because beds intersect
 }
 ```
 
+It's worth noting that I mindfully spent time making these endpoints atomic and encased all database inserts in a transaction. So in the case of the latter example, even though the layout was created (_and it had to be to get the layout_id_) the beds collided and so the transaction was rolled back. I thought it was worth doing that because these are the kinds of considerations a framework cannot understand. You're still responsible for your data.
+
 
 ### 2. Layouts and Beds
 
-I'd love to give you copy and paste examples, because everyone loves a bit of click'n'fire however at this stage you're going to need to get ids' that are specific to the instance running on your machine.
+I'd love to give you copy and paste examples, because everyone loves a bit of click'n'fire however at this stage you're going to need to get ids' that are specific to the instance running on your machine.  Postman is useful here and if you open up the collection I've given you can use that to submit
+
+Example payload for success
+
+```json
+
+{
+  "name": "Bobs Super Planting Plan",
+  "layout_id": 10,
+  "description": "arrgh man, yiv never seen mahters lyke it (say it in geordie)",
+  "plans": [
+    {
+      "bed_id": 1,
+      "plant_id": "tomato",
+      "area": 1.8
+    },
+    {
+      "bed_id": 2,
+      "plant_id": "radish",
+      "area": 3
+    }
+  ]
+}
+```
+
+which returns
+
+```json
+{
+    "id": 8,
+    "name": "Bobs Super Planting Plan",
+    "description": "arrgh man, yiv never seen mahters lyke it",
+    "plans": [
+        { "id": 13, "area": 1.8,
+            "bed": { "id": 1, "x": 0.0, "y": 0.0, "w": 2.5, "l": 1.8, "area": 4.5, "soil_id": 1 },
+            "plant": { "name": "tomato", "id": 1 }
+        },
+        {
+            "id": 14,
+            "area": 3.0,
+            "bed": { "id": 2, "x": 5.0, "y": 3.0, "w": 3.0, "l": 3.0, "area": 9.0, "soil_id": 2 },
+            "plant": { "name": "radish", "id": 9 }
+        }
+    ],
+    "score": null
+}
+```
+
+And to demonstrate failure, here is a plan that massively exceeds the size of the bed
+
+```json
+{
+  "name": "Excessively Optimistic",
+  "layout_id": 10,
+  "description": "Big bed. Not sure that is going to work",
+  "plans": [
+    { "bed_id": 1, "plant_id": "tomato", "area": 50 },
+    { "bed_id": 2, "plant_id": "radish", "area": 3 }
+  ]
+}
+```
+
+which results in this error
+
+```json
+{
+    "errors": {
+        "area": [
+            "The area of the plan exceeds the bed area of 4.5"
+        ]
+    }
+}
+```
+
+Note: that error is less than good because it is not clear what bed is at fault. Add it to the todos... Normally I'd jump in and fix it, but I've drawn a line. It is these small things that break production applications (_the five minute jobs_)
+
+
+### 3. Scores
+
+I didn't complete this task.
 
 
 ## Endpoints
