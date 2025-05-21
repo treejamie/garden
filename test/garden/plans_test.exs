@@ -10,6 +10,32 @@ defmodule Garden.PlansTest do
 
   # TODO: organise this better
   describe "plan context tests" do
+
+    # test it with a numeric id
+    # test it with a binary numeric
+
+
+    @tag(:skip)
+    test "calculate_score_for_strategy" do
+      # build universe
+      {:ok, soil1} = Plans.create_soil(%{name: "clay"})
+      {:ok, _soil2} = Plans.create_soil(%{name: "loam"})
+      {:ok, plant1} = Plans.create_plant(%{name: "tomato", soils: [soil1.id]})
+      {:ok, plant2} = Plans.create_plant(%{name: "celery", soils: [soil1.id], benefits_from: [plant1.id]})
+      {:ok, layout} = Plans.create_layout(%{name: "Cillit Bang"})
+      {:ok, bed1} = Plans.create_bed_in_layout(%{ layout_id: layout.id, soil_id: soil1.id, x: 0, y: 0, l: 2, w: 2 })
+      {:ok, bed2} = Plans.create_bed_in_layout(%{ layout_id: layout.id, soil_id: soil1.id, x: 2, y: 2, l: 2, w: 2 })
+      {:ok, strategy} = Plans.create_strategy(%{name: "BANG! and the dirt is gone", layout_id: layout.id})
+      {:ok, _plan1} = Plans.create_plan_in_strategy(%{strategy_id: strategy.id, bed_id: bed1.id, area: 4, plant_id: plant1.id, score: 10})
+      {:ok, _plan2} = Plans.create_plan_in_strategy(%{strategy_id: strategy.id, bed_id: bed2.id, area: 4, plant_id: plant2.id, score: 10})
+
+
+      # _result = Plans.calculate_score_for_strategy(strategy)
+
+
+    end
+
+
     test "create_layout_and_beds_atomically detects collision" do
       # make the background knowledge - just need soil for beds
       {:ok, soil} = Plans.create_soil(%{name: "loam"})
@@ -19,7 +45,7 @@ defmodule Garden.PlansTest do
         "name" => "Kew",
         "beds" => [
           %{"soil_id" => soil.id, "x" => 1, "y" => 0, "l" => 2, "w" => 2},
-          %{"soil_id" => soil.id, "x" => 2, "y" => 2, "l" => 2, "w" => 2}
+          %{"soil_id" => soil.id, "x" => 1, "y" => 1, "l" => 2, "w" => 2}
         ]
       }
 

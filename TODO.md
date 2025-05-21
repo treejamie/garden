@@ -1,3 +1,41 @@
+# Missing Functionality
+
+I was more or less at 5 hours of desk time by 7pm last night. I tagged the repository at this stage (["time-limit"](https://github.com/treejamie/garden/releases/tag/time-limit)). I was close to the end and on the last task, but Ididn't get this completed and whilst every part of me was screaming "five more minutes, five more minutes" I had to draw a line under the exercise and submit it. I patched up the tests merged into main and tagged the repository "end of task"
+
+## 🚧 5-API-Scores
+
+The HTTP bit is well beaten for me, this would have been a few minutes of router, controller, template and done.
+
+Calculating scores however, this is where I'm at my current functional limit. I'm sure I could work through it with more time. I'd like to be clear though that I am deeply engeged in a long term project to excel in my engineering. Any limits you see today are being pushed further and further through investment into myself.
+
+If you're looking for a weak area in my application ths is one of them, but I want to be clear that intend on turning this weakness into a strength.  In terms of pseudo elixir though, here's how I would have approached it
+
+```Elixir
+# I'd be looking for a list of scores [11, 12, 9]
+scores = 
+  # map returns list of scores for averaging onto Strategy.
+  # kind of side-effecty in that plans are mutated in the pipeline.
+  Enum.map(strategy.plans, fn plan ->
+    # each function would return 
+    # {:ok, plan, score} on success
+    # {:ok, plan, 0} if it failed
+    with {:ok, plan, score} <- score_neighbours(plan),
+         {:ok, plan, score} <- score_soil(plan),
+         {:ok, plan, score} <- score_soil_type(plan) do
+    else ->
+    {:error, plan, 0}
+    end)
+
+# average scores, make a changeset and update the strategy.
+# I now realised I've created a line of sight on the solution for this part of the task!
+```
+I would have focused on solving it first and then optimising it, the database would probably take a hit in development, but that'd be something I'd design out before I requested any pull request into production code.
+
+Each score function would have been some form of recursion on the plans, and that'd be a nice talking point becasue a 
+tail recursion for boundaries (score neighbours) was a function I was looking forward to writing.
+
+# Future Ideas
+
 ## Authorisation
 
 Seems obvious but here is an API with write access. If this was online, someone/thing/group would find a way to use it in unintended and likley not legally abiding ways.
@@ -15,9 +53,14 @@ There's a few places that have some smelly database work, tidying them up and wi
 
 ## OTP
 
-I didn't implement anything custom in OTP for this. It didn't see any place where it would be justified.
-I just wanted to mention that because OTP is one of the crown jewels.
+The one place where I think OTP would be a good fit for this application is in counting scores. Right now there's three calculations (boundary sharing & companion plants, area of plan to bed and plan matches soil type). With just a few rows that's not going to kill a processor, but with hundreds, thousands or multiples thereof, those calculations are going to add load. I didn't finish scores, but I would have handled their calculation in an async_task just to get the pattern implemented in the design.
 
+Future expansion of that may have looked like:
+
+1. When async task performance was starting to creek > GenServer.  (weeks / months)
+2. When GenServer task performance was starting to creek > back-pressure (GenStage or another library - [Broadway][4]) handling into GenServer calculation.  (months / year)
+3. When backpressure + GenServer wasn't working I'd throw X amount of money at servers until tipping point Y was reached. I'd also deploy with a series of introspection tools for sensing when failure point Z was likley to arrive.
+4. I'd start researching and experimenting with very specific solutions for the problem and get candidates for solutions tested and implemented well before point Z.
 
 
 ## Proper GeoSpatial with PostGIS
@@ -134,3 +177,4 @@ They're very similar in functionality and it'd be a hoot to figure out an abstra
 
 
 [1]: https://hexdocs.pm/ecto/Ecto.Changeset.html#cast_assoc/3 
+[2]: https://github.com/dashbitco/broadway

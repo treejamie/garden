@@ -3,7 +3,8 @@ defmodule Garden.Repo.Migrations.AddScoreOnBeds do
 
   def change do
     alter table(:plans) do
-      add(:scores, :float)
+      add(:score, :integer, default: 10)
     end
+
   end
 end
