@@ -1,6 +1,6 @@
 *Interviewers*: 👋 Hello, I'm Jamie and look forward to discussing my work with you. Normally I'd run my readmes through an LLM to make them less wordy and less me, but in this case I've left them as is. Forgive any typos. It's semi-coversationally and is not how I would normally write a readme. An example of how I would normally approach a readme can be found [here][0] and [here][1]. Ok, that being said, on with the show...
 
-There was a 3-4 hour time limit but in total I likley spent about 8-10 hours on it over the course of 20-21st May 2025. I did [tag the state of the application at the time limit][2]. What you see here is the final output for my submission which will also be tagged, but I cannot link that until I've written this. Circular dependancy 😆.
+There was a 3-4 hour time limit but in total I likley spent about 8-10 hours on it over the course of 20-21st May 2025. I did [tag the state of the application at the time limit][2]. What you see here has been tagged as the [final output for my submission][7]. I'm likely going to finish it on my own time though as the fifth task has a lot of learning potential in it. If that happens, this this will no longer the final submission and I will tag that release with completed 🥳.
 
 Also, whilst you may be looking at the code only, I took some effort to show how I'd use [Github][6]. I setup issues and made [PR's against them][4]. I also [setup a CI pipeline][5] at the start of the challenge. I thought that was worth pointing out incase it is missed. Normally I delete feature branches once I've squash merged them into main, but I have left them intact in case you want to go poking things with sticks!
 
@@ -227,3 +227,4 @@ I declare that none of the code in the repository was written by AI.
 [4]: https://github.com/treejamie/garden/pulls?q=is%3Apr+is%3Aclosed
 [5]: https://github.com/treejamie/garden/pull/7
 [6]: https://github.com/treejamie/garden
+[7]: https://github.com/treejamie/garden/releases/tag/submission
