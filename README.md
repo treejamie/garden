@@ -2,6 +2,8 @@
 
 There was a 3-4 hour time limit but in total I likley spent about 8-10 hours on it over the course of 20-21st May 2025. I did [tag the state of the application at the time limit][2]. What you see here is the final output for my submission which will also be tagged, but I cannot link that until I've written this. Circular dependancy 😆.
 
+Also, whilst you may be looking at the code only, I took some effort to show how I'd use [Github][6]. I setup issues and made [PR's against them][4]. I also [setup a CI pipeline][5] at the start of the challenge. I thought that was worth pointing out incase it is missed. Normally I delete feature branches once I've squash merged them into main, but I have left them intact in case you want to go poking things with sticks!
+
 One more thing. The spec on the challenge supplied CSV and said it was ok to change the datafiles, so I took a liberty and as JSON was already the format for the background-knowledge, I figured it'd be ok as the main format for using the API. After all, it returns JSON so it made more sense for it to accept JSON.
 
 Anyway...
@@ -220,3 +222,8 @@ I declare that none of the code in the repository was written by AI.
 [1]: https://github.com/treejamie/helloworld/tree/main/elixir
 [2]: https://github.com/treejamie/garden/releases/tag/time-limit
 [3]: https://github.com/user-attachments/files/20361812/Verna.final.postman_collection.json
+
+
+[4]: https://github.com/treejamie/garden/pulls?q=is%3Apr+is%3Aclosed
+[5]: https://github.com/treejamie/garden/pull/7
+[6]: https://github.com/treejamie/garden
