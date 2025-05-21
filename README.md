@@ -178,7 +178,7 @@ Note: that error is less than good because it is not clear what bed is at fault.
 
 ### 3. Scores
 
-I didn't complete this task.
+I didn't complete this task, but [I've hinted at how I'd approach if I had the time in the PR][8].
 
 
 ## Endpoints
@@ -228,3 +228,4 @@ I declare that none of the code in the repository was written by AI.
 [5]: https://github.com/treejamie/garden/pull/7
 [6]: https://github.com/treejamie/garden
 [7]: https://github.com/treejamie/garden/releases/tag/submission
+[8]: https://github.com/treejamie/garden/pull/12
