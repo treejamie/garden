@@ -21,4 +21,10 @@ defmodule Garden.Plans.Strategy do
     |> cast(attrs, [:name, :description, :score, :layout_id])
     |> validate_required([:name, :layout_id])
   end
+
+  def score_changeset(strategy, attrs) do
+    strategy
+    |> cast(attrs, [:score])
+    |> validate_required([:score])
+  end
 end

@@ -6,6 +6,7 @@ defmodule Garden.Plans.Plan do
   @derive {Jason.Encoder, only: [:id, :area, :bed, :plant]}
   schema "plans" do
     field(:area, :float)
+    field(:score, :integer, default: 10)
 
     belongs_to(:bed, Garden.Plans.Bed)
     belongs_to(:plant, Garden.Plans.Plant)
@@ -17,7 +18,7 @@ defmodule Garden.Plans.Plan do
   @doc false
   def changeset(plan, attrs) do
     plan
-    |> cast(attrs, [:area, :bed_id, :plant_id, :strategy_id])
+    |> cast(attrs, [:area, :bed_id, :plant_id, :score, :strategy_id])
     |> validate_required([:area])
   end
 end

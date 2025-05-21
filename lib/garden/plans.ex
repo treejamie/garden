@@ -11,6 +11,29 @@ defmodule Garden.Plans do
   alias Garden.Plans.{Layout, Soil, Plant, Bed, Strategy, Plan}
 
   @doc """
+  Calculate a score for a given strategy based on various factors
+  of the plan for each bed
+  """
+  def calculate_score_for_strategy(_strategy) do
+
+    # https://www.youtube.com/watch?v=M2dhD9zR6hk
+    raise "Not implemented"
+    # # ensure preloading of plans
+    # strategy = Repo.preload(strategy[:plans])
+
+    # # now do the score
+    # score =
+    #   strategy.plans
+    #   |> Enum.map(fn plan ->
+    #     oh dear
+    #   end)
+
+    # Strategy.score_changeset(strategy, %{score: score}) |> Repo.update()
+
+
+  end
+
+  @doc """
   Atomically create plans, if there are any issues, abort and rollback
   """
   def create_strategy_and_plans_atomically(attrs) do
@@ -34,7 +57,6 @@ defmodule Garden.Plans do
       # how I feel about this approach.
       _plans =
         Enum.map(plans_attrs, fn attrs ->
-
           # put strategy_id onto the map
           attrs = Map.put(attrs, "strategy_id", strategy.id)
 
@@ -73,8 +95,8 @@ defmodule Garden.Plans do
           end
         end)
 
-        # and done, yippee
-        Repo.preload(strategy, [:plans])
+      # and done, yippee
+      Repo.preload(strategy, [:plans])
     end)
   end
 
@@ -318,15 +340,16 @@ defmodule Garden.Plans do
 
   @doc """
   Detects overlap on a new bed against existing beds.
-  Currently uses primitive collision detection (AABB) and doesn't handle
-  touching very well.
+  Currently uses primitive collision detection (AABB).
+
+  Set up to allow touching.
   """
   def overlaps_any?(new_bed, existing_beds) do
     Enum.any?(existing_beds, fn bed ->
-      not (new_bed.x + new_bed.w < bed.x or
-             new_bed.x > bed.x + bed.w or
-             new_bed.y + new_bed.l < bed.y or
-             new_bed.y > bed.y + bed.l)
+      not (new_bed.x + new_bed.w <= bed.x or
+             new_bed.x >= bed.x + bed.w or
+             new_bed.y + new_bed.l <= bed.y or
+             new_bed.y >= bed.y + bed.l)
     end)
   end
 
