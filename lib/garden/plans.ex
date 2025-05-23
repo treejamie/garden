@@ -34,7 +34,9 @@ defmodule Garden.Plans do
   end
 
   @doc """
-  Atomically create plans, if there are any issues, abort and rollback
+  Atomically create plans, if there are any issues, abort and rollback.
+
+  Dragon.
   """
   def create_strategy_and_plans_atomically(attrs) do
     # get the attributes
@@ -214,9 +216,9 @@ defmodule Garden.Plans do
   it goes.
 
   """
+
   def create_layout_and_beds_atomically(attrs) do
     # get the attributes
-
     layout_attrs = Map.drop(attrs, ["beds"])
     beds_attrs = Map.get(attrs, "beds", [])
 
