@@ -14,7 +14,7 @@ defmodule Garden.API do
   """
   def get_soil_by_id_or_name(%{"soil_id" => identifier}) do
     case Plans.get_soil(identifier) do
-      nil -> {:soil_error, :get_soil_by_id_or_name, identifier}
+      nil -> {:error, :soil_not_found}
       soil -> {:ok, soil}
     end
   end
@@ -29,7 +29,7 @@ defmodule Garden.API do
          attrs <- Map.put(attrs, "soil_id", soil.id) do
       {:ok, attrs}
     else
-      {:soil_error, reason, id }  -> {:soil_error, reason, id }
+      {:error, :soil_not_found }  -> {:error, "soil type not found in #{inspect(attrs)}"}
       _ -> {:error, attrs}
     end
   end
