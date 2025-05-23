@@ -1,12 +1,27 @@
 defmodule Garden.API do
   alias Garden.Plans
+  alias Garden.Repo
 
+
+  @doc """
+  Builds attrs for a layout from a supplied map
+  """
   def build_layout_attrs(attrs) do
-    Map.drop(attrs, ["beds"])
+    case Map.has_key?(attrs, "name") do
+      true -> {:ok, Map.drop(attrs, ["beds"])}
+      false -> {:error, :build_layout_attrs}
+    end
   end
 
+  @doc """
+  Builds attrs for a list of beds from a supplied map
+  """
+
   def build_beds_attrs(attrs) do
-    Map.get(attrs, "beds", [])
+    case Map.has_key?(attrs, "beds") do
+      true -> {:ok, Map.get(attrs, "beds", [])}
+      false -> {:error, :build_beds_attrs}
+    end
   end
 
   @doc """
@@ -29,8 +44,61 @@ defmodule Garden.API do
          attrs <- Map.put(attrs, "soil_id", soil.id) do
       {:ok, attrs}
     else
-      {:error, :soil_not_found }  -> {:error, "soil type not found in #{inspect(attrs)}"}
-      _ -> {:error, attrs}
+      {:error, :build_beds_attrs} ->
+        {:error, "cannot build beds - key 'beds' not found #{attrs}"}
+
+      {:error, :build_layout_attrs} ->
+        {:error, "cannot build layout - key 'name' name not found #{attrs}"}
+
+      {:error, :soil_not_found} ->
+        {:error, "soil type not found in #{attrs}"}
+
+      _ ->
+        {:error, attrs}
+    end
+  end
+
+  def create_beds(beds_attrs) do
+    # make the beds
+    beds =
+      Enum.map(beds_attrs, fn bed_attrs ->
+          case Plans.create_bed_in_layout(bed_attrs) do
+            {:ok, bed} -> bed
+            {:error, changeset} ->  {:error, changeset}
+          end
+      end)
+    beds |> IO.inspect(beds)
+    # all or nothing so ensure they all were :ok
+
+  end
+
+  def create_layout(attrs) do
+    case Plans.create_layout(attrs) do
+      {:error, changeset} -> {:create_layout_error, changeset}
+      {:ok, layout} -> {:ok, layout}
+    end
+  end
+
+  def create_layout_and_beds_atomically(attrs) do
+    Repo.transaction(fn ->
+      case create_layout_and_beds(attrs) do
+        {:ok, layout} -> {:ok, layout}
+        {:error, error} -> Repo.rollback( {:error, error})
+      end
+    end)
+  end
+
+  def create_layout_and_beds(attrs) do
+    with {:ok, layout_attrs} <- build_layout_attrs(attrs),
+         {:ok, build_beds_attrs} <- build_beds_attrs(attrs),
+         {:ok, layout} <- create_layout(layout_attrs),
+         {:ok, beds} <- create_beds(build_beds_attrs) do
+      Repo.preload(layout, :beds)
+    else
+      {:error, :layout_attrs_error} ->
+        {:error, "layout attrs could not be build from #{attrs}"}
+      _ ->
+        :foo
     end
   end
 end
