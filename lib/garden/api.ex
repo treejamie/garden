@@ -3,6 +3,18 @@ defmodule Garden.API do
   alias Garden.Repo
 
 
+
+
+ def atomically_insert(insert_fn, attrs) do
+    Repo.transaction(fn ->
+      case insert_fn.(attrs) do
+        {:ok, schema_struct} -> {:ok, schema_struct}
+        {:error, error} -> Repo.rollback( {:error, error})
+      end
+    end)
+  end
+
+
   @doc """
   Builds attrs for a layout from a supplied map
   """
@@ -79,14 +91,7 @@ defmodule Garden.API do
     end
   end
 
-  def create_layout_and_beds_atomically(attrs) do
-    Repo.transaction(fn ->
-      case create_layout_and_beds(attrs) do
-        {:ok, layout} -> {:ok, layout}
-        {:error, error} -> Repo.rollback( {:error, error})
-      end
-    end)
-  end
+
 
   def create_layout_and_beds(attrs) do
     with {:ok, layout_attrs} <- build_layout_attrs(attrs),
