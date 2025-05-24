@@ -19,7 +19,28 @@ defmodule Garden.APITest do
     }
   end
 
-  test "resolve soils returns {:ok, attrs} as ids - happy path one soil type" do
+  test "resolve soils returns soil attrs as ids - happy path three soils, two types" do
+
+    # universe build, two soils, a new build and new attrs_in
+    {:ok, chalk} = Plans.create_soil(%{"name" => "chalk"})
+    {:ok, loam} = Plans.create_soil(%{"name" => "loam"})
+    loam_bed = %{"soil_id" => "loam", "x" => 5, "y" => 5, "l" => 2, "w" => 2}
+    attrs_in = Map.update!(valid_attrs(), "beds", fn beds -> beds ++ [loam_bed] end)
+
+    # we have clay soil and the id matches
+    assert %{
+      "name" => "Kew",
+      "beds" => [
+        %{"soil_id" => chalk.id, "x" => 1, "y" => 0, "l" => 2, "w" => 2},
+        %{"soil_id" => chalk.id, "x" => 3, "y" => 3, "l" => 2, "w" => 2},
+        %{"soil_id" => loam.id, "x" => 5, "y" => 5, "l" => 2, "w" => 2}
+      ]
+    } == API.resolve_soils(attrs_in)
+  end
+
+
+
+  test "resolve soils returns soil attrs as ids - happy path one soil type" do
 
     # universe build
     {:ok, soil} = Plans.create_soil(%{"name" => "chalk"})

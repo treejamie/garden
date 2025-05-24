@@ -30,22 +30,16 @@ defmodule Garden.API do
             nil -> Map.put(bed, "soil_id", nil)
             %Soil{} = soil -> Map.put(bed, "soil_id", soil.id)
           end
-
       end)
 
     # update the attrs with the beds translated into ids.
     Map.put(attrs, "beds", beds_out)
   end
 
-
-  @doc """
-  Not sure you need the layout attrs as there may be no difference
-  if you just went direct to the changeset... leave for now, once
-  final test passes and you're removing stuff, then come back to this
-  """
+  # creates a layout with beds
   def create_layout_and_beds(attrs) do
-    with {:ok, attrs} <- resolve_soils(attrs),
-         changeset <- Layout.changeset(%Layout{}, attrs),
+    with attrs <- resolve_soils(attrs),
+         changeset <- Layout.changeset_with_beds(%Layout{}, attrs),
          {:ok, layout} <- Repo.insert(changeset) do
       Repo.preload(layout, :beds)
     else
