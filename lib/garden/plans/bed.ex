@@ -27,6 +27,17 @@ defmodule Garden.Plans.Bed do
     |> validate_number(:l, greater_than_or_equal_to: 1)
     |> validate_number(:w, greater_than_or_equal_to: 1)
     |> calculate_area()
+    # TODO: handle collision here
+  end
+
+  def changeset_for_layout(bed, attrs) do
+    # collision isn't handled here, it is handled in Layout (parent).
+    bed
+    |> cast(attrs, [:x, :y, :l, :w, :area, :soil_id])
+    |> validate_required([:x, :y, :l, :w, :soil_id])
+    |> validate_number(:l, greater_than_or_equal_to: 1)
+    |> validate_number(:w, greater_than_or_equal_to: 1)
+    |> calculate_area()
   end
 
   defp calculate_area(changeset) do
@@ -37,4 +48,5 @@ defmodule Garden.Plans.Bed do
       _ -> changeset
     end
   end
+
 end

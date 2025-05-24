@@ -77,5 +77,4 @@ plants =
       |> Ecto.Changeset.put_assoc(:soils, soils)
       |> Repo.update!()
 
-    IO.inspect(benefits_from)
   end)

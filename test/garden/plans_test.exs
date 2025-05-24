@@ -36,6 +36,8 @@ defmodule Garden.PlansTest do
     end
 
 
+
+    @tag :dragon
     test "create_layout_and_beds_atomically detects collision" do
       # make the background knowledge - just need soil for beds
       {:ok, soil} = Plans.create_soil(%{name: "loam"})
@@ -58,6 +60,7 @@ defmodule Garden.PlansTest do
       assert 0 == Repo.aggregate(Bed, :count, :id)
     end
 
+    @tag :dragon
     test "create_layout_and_beds_atomically works with an actual soil.id" do
       # make the background knowledge - just need soil for beds
       {:ok, soil} = Plans.create_soil(%{name: "loam"})
@@ -79,6 +82,7 @@ defmodule Garden.PlansTest do
       assert 1 == Repo.aggregate(Bed, :count, :id)
     end
 
+    @tag :dragon
     test "create_layout_and_beds_atomically translates a binary soil_id is into an actual soil.id" do
       # make the background knowledge - just need soil for beds
       {:ok, _soil} = Plans.create_soil(%{name: "loam"})
