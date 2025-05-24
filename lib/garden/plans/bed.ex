@@ -21,6 +21,7 @@ defmodule Garden.Plans.Bed do
 
   @doc false
   def changeset(bed, attrs) do
+
     bed
     |> cast(attrs, [:x, :y, :l, :w, :area, :layout_id, :soil_id])
     |> validate_required([:x, :y, :l, :w, :layout_id, :soil_id])
@@ -37,4 +38,5 @@ defmodule Garden.Plans.Bed do
       _ -> changeset
     end
   end
+
 end
